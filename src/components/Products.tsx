@@ -8,13 +8,17 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null | string>(null);
   const [searchParams] = useSearchParams();
+  const [visibleProducts, setVisibleProducts] = useState<ProductType[]>([]);
+  const [itemsToShow, setItemsToShow] = useState(6); // Number of items to show initially
 
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch("https://fakestoreapi.com/products");
         const data = await response.json();
         setProducts(data);
+        setVisibleProducts(data.slice(0, itemsToShow)); // Initial set of products
         setLoading(false);
       } catch (err) {
         setError("Failed to fetch products");
@@ -25,6 +29,7 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
+  // Filter and sort products
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
     const category = searchParams.get("category");
@@ -45,7 +50,7 @@ const ProductList = () => {
 
     if (rating) {
       filtered = filtered.filter(
-        (product) => product.rating.rate >= parseFloat(rating)
+        (product) => product.rating.rate <= parseFloat(rating)
       );
     }
 
@@ -59,6 +64,27 @@ const ProductList = () => {
     return filtered;
   }, [products, searchParams]);
 
+  // Update visible products when filtered products or itemsToShow change
+  useEffect(() => {
+    setVisibleProducts(filteredProducts.slice(0, itemsToShow));
+  }, [filteredProducts, itemsToShow]);
+
+  // Infinite scroll handler
+  const handleScroll = () => {
+    const scrollPosition = window.innerHeight + document.documentElement.scrollTop;
+    const threshold = document.documentElement.scrollHeight - 10;
+
+    if (scrollPosition >= threshold && visibleProducts.length < filteredProducts.length) {
+      setItemsToShow((prev) => prev + 6); // Show 6 more items
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [visibleProducts, filteredProducts]);
+
+  // Loading state
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -76,25 +102,36 @@ const ProductList = () => {
     );
   }
 
+  // Error state
   if (error) {
     return <div className="text-center mt-8 text-red-500">{error}</div>;
   }
 
+  // No products found state
   if (filteredProducts.length === 0) {
     return (
-      <div className="text-center mt-8 text-gray-500">
-        <p>No results found based on the applied filters.</p>
+      <div className="text-center mt-8 text-gray-500 col-span-full">
+        <p className="w-full">No results found based on the applied filters.</p>
       </div>
     );
   }
 
+  // Render products
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-      {filteredProducts.map((product) => (
+      {visibleProducts.map((product) => (
         <Product key={product.id} product={product} />
       ))}
+
+      {/* Loading indicator for infinite scroll */}
+      {visibleProducts.length < filteredProducts.length && (
+        <div className="text-center col-span-full mt-4 text-gray-500">
+          Loading more products...
+        </div>
+      )}
     </div>
   );
 };
 
 export default ProductList;
+ 
