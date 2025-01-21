@@ -18,24 +18,10 @@ const Filters = () => {
     navigate({ search: updatedParams.toString() });
   };
 
-  const toggleFilterVisibility = () => {
-    setIsFilterVisible(!isFilterVisible);
-  };
-
   return (
     <div className="relative">
-      {/* Button to toggle filter visibility on mobile */}
-      <button
-        onClick={toggleFilterVisibility}
-        className="lg:hidden bg-blue-600 text-white py-2 px-4 rounded mb-4"
-      >
-        {isFilterVisible ? "Hide Filters" : "Show Filters"}
-      </button>
-
       <div
-        className={`${
-          isFilterVisible ? "max-h-screen" : "max-h-0 overflow-hidden"
-        } lg:max-h-screen transition-all duration-300 ease-in-out overflow-auto border rounded-lg p-4 shadow-md bg-white text-left w-full sm:w-auto min-w-[250px]`}
+        className={`lg:max-h-screen transition-all duration-300 ease-in-out overflow-auto border rounded-lg p-4 shadow-md bg-white text-left w-full sm:w-full`}
       >
         <h2 className="text-xl font-semibold mb-4">Filters</h2>
 

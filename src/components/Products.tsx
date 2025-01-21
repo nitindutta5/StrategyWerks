@@ -104,7 +104,7 @@ const ProductList = () => {
 
   // Error state
   if (error) {
-    return <div className="text-center mt-8 text-red-500">{error}</div>;
+    return <div className="text-left mt-8 text-red-500">{error}</div>;
   }
 
   // No products found state
