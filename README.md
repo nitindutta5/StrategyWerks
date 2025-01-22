@@ -9,16 +9,16 @@ Currently, two official plugins are available:
 
 ## Expanding the ESLint configuration
 
-## About the app
+### About the app
 
-# Implemented Lazy Loading on Images: 
+## Implemented Lazy Loading on Images: 
 Images are optimized to load only when they appear in the viewport, reducing initial page load time.
-# Filters and Sorting Integrated with Query Parameters: 
+## Filters and Sorting Integrated with Query Parameters: 
 Filter and sorting options dynamically update based on query parameters, ensuring seamless user experience and shareable URLs.
-# Responsive Design with Tailwind CSS: 
+## Responsive Design with Tailwind CSS: 
 The app's layout is fully responsive, offering an optimal viewing experience across all devices using Tailwind CSS.
-# Client-Side Infinite Loading: 
+## Client-Side Infinite Loading: 
 Products are loaded incrementally as users scroll down, improving performance and user engagement. Reason for implementing this was that the fake API dont provide pagination
-# Identified Issue with Client Side Infinite Loading:
-While implementing client-side infinite loading, it was noted that if the dataset is exceptionally large, it can lead to performance bottlenecks. This can cause excessive memory usage, increased API calls, or a laggy scrolling experience, particularly on devices with limited resources. Optimizations to mitigate this issue are currently being explored.
+## Identified Issue Infinite Loading:
+If the DOM elements will increase it will be a bottleneck so we can implement React-window or react virtualisation library to render only visible items to the dom.
 ```
