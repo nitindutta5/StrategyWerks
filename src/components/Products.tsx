@@ -107,7 +107,7 @@ const ProductList = () => {
   }
 
   // No products found state
-  if (products.length === 0 && !loading) {
+  if (filteredProducts.length === 0 && !loading) {
     return (
       <div className="text-center mt-8 text-gray-500 col-span-full">
         <p className="w-full">No results found based on the applied filters.</p>
