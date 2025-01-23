@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Product from "./Product";
 import { ProductType } from "../interface";
+import { useSearchParams } from "react-router";
 
 const ProductList = () => {
+  const [searchParams] = useSearchParams();
   const [products, setProducts] = useState<ProductType[]>([]);
   const [page, setPage] = useState(1); // Current page
-  const [limit] = useState(6); // Number of items per page
+  const [limit] = useState(10); // Number of items per page
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
 
@@ -31,6 +33,35 @@ const ProductList = () => {
     }
   };
 
+  const filteredProducts = useMemo(() => {
+    let filtered = [...products];
+    const category = searchParams.get("category");
+    const maxPrice = searchParams.get("maxPrice");
+    const rating = searchParams.get("rating");
+    const sort = searchParams.get("sort");
+    // Apply filters
+    if (category) {
+      filtered = filtered.filter((product) => product.category === category);
+    }
+    if (maxPrice) {
+      filtered = filtered.filter(
+        (product) => product.price <= parseFloat(maxPrice)
+      );
+    }
+    if (rating) {
+      filtered = filtered.filter(
+        (product) => product.rating.rate <= parseFloat(rating)
+      );
+    }
+    // Apply sorting
+    if (sort === "price-asc") {
+      filtered = filtered.sort((a, b) => a.price - b.price);
+    } else if (sort === "price-desc") {
+      filtered = filtered.sort((a, b) => b.price - a.price);
+    }
+    return filtered;
+  }, [products, searchParams]);
+
   // Initial fetch
   useEffect(() => {
     fetchProducts();
@@ -38,7 +69,8 @@ const ProductList = () => {
 
   // Infinite scroll handler
   const handleScroll = () => {
-    const scrollPosition = window.innerHeight + document.documentElement.scrollTop;
+    const scrollPosition =
+      window.innerHeight + document.documentElement.scrollTop;
     const threshold = document.documentElement.scrollHeight - 10;
 
     if (scrollPosition >= threshold) {
@@ -86,8 +118,8 @@ const ProductList = () => {
   // Render products
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-      {products.map((product, id ) => (
-        <Product key={id+""+product.id} product={product} />
+      {filteredProducts.map((product, id) => (
+        <Product key={id + "" + product.id} product={product} />
       ))}
       {/* Loading indicator for infinite scroll */}
       {loading && (
